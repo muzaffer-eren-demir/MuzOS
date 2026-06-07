@@ -1,4 +1,4 @@
-uint16_t led_task_adresses[4];
+uint16_t led_task_adresses[3];
 uint16_t led_task_delay_duration = 0;
 uint16_t led_task_delay_next_addr = kernel_blackhole;
 uint32_t led_task_delay_start_time = 0;
@@ -7,24 +7,22 @@ uint8_t led_blink_count;
 void led_on() {
   led_blink_count++;
   digitalWrite(13, 1);
-  led_task_delay_next_addr = led_task_adresses[1];
-  led_task_delay_start_time = millis();
-  kernel_add_task(led_task_adresses[2]);
+  kernel_delay(200, led_task_adresses[1]);
+  /*
+    led_task_delay_next_addr = led_task_adresses[1];
+    led_task_delay_start_time = millis();
+    kernel_add_task(led_task_adresses[2]);
+  */
 }
 
 void led_off() {
   digitalWrite(13, 0);
-  led_task_delay_next_addr = led_task_adresses[3];
-  led_task_delay_start_time = millis();
-  kernel_add_task(led_task_adresses[2]);
-}
-
-void led_delay() {
-  if (millis() - led_task_delay_start_time >= led_task_delay_duration) {
-    kernel_add_task(led_task_delay_next_addr);
-  } else {
+  kernel_delay(200, led_task_adresses[2]);
+  /*
+    led_task_delay_next_addr = led_task_adresses[0];
+    led_task_delay_start_time = millis();
     kernel_add_task(led_task_adresses[2]);
-  }
+  */
 }
 
 void led_kill() {
@@ -39,8 +37,7 @@ void led_kill() {
 void led_init() {
   led_task_adresses[0] = led_on;
   led_task_adresses[1] = led_off;
-  led_task_adresses[2] = led_delay;
-  led_task_adresses[3] = led_kill;
+  led_task_adresses[2] = led_kill;
 
   pinMode(13, OUTPUT);
   digitalWrite(13, 0);
